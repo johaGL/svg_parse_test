@@ -49,12 +49,12 @@ def print_the_svg(filename):
     plt.close()
 
 
-def getText(nodelist):
-    rc = []
-    for node in nodelist:
-        if node.nodeType == node.TEXT_NODE:
-            rc.append(node.data)
-    return ''.join(rc)
+# def getText(nodelist):
+#     rc = []
+#     for node in nodelist:
+#         if node.nodeType == node.TEXT_NODE:
+#             rc.append(node.data)
+#     return ''.join(rc)
 
 
 if __name__ == '__main__':
