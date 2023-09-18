@@ -5,6 +5,7 @@ with the objective of creating :
 
 @author : johanna sept 2023
 """
+import os
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,54 +13,7 @@ from xml.dom import minidom
 import pandas as pd
 
 
-def print_the_svg(filename):
-    tips = sns.load_dataset("tips")
-
-    fig, axs_k = plt.subplots(
-        nrows=1, ncols=1,
-        figsize=(5, 4))
-    #fig.patch.set_facecolor('white')
-    sns.barplot(
-        ax=axs_k,
-        x="sex",
-        y="total_bill",
-        hue="smoker",
-        data=tips,
-        palette='Accent',
-        edgecolor="black",
-        errcolor="black",
-        errwidth=1.5,
-        capsize = 0.1,
-    )
-    np.random.seed(123)  # to force the jitter not to randomly change
-    # map data to stripplot
-    sns.stripplot(
-        ax=axs_k,
-        data=tips,
-        x='sex',
-        y='total_bill',
-        hue='smoker',
-        palette='Accent',
-        dodge=True,
-        edgecolor="black",
-        linewidth=1.3,
-        alpha=1
-    )
-    plt.savefig(filename)
-    plt.close()
-
-
-# def getText(nodelist):
-#     rc = []
-#     for node in nodelist:
-#         if node.nodeType == node.TEXT_NODE:
-#             rc.append(node.data)
-#     return ''.join(rc)
-
-
-if __name__ == '__main__':
-    filename = "myfig.svg"
-    print_the_svg(filename)
+def verify_this_svg(filename):
     with open(filename, "r") as f:
         d0 = minidom.parse(f)
 
@@ -95,8 +49,18 @@ if __name__ == '__main__':
     bool_url = urls_arr.str.startswith("url")
     bool_tt = tt_arr.str.contains("translate|scale")
 
-    print(np.alltrue(bool_allids))
-    print(np.alltrue(bool_url))
-    print(np.alltrue(bool_styles))
-    print(np.alltrue(bool_tt))
+    return np.alltrue(bool_allids), np.alltrue(bool_url), np.alltrue(bool_styles), np.alltrue(bool_tt)
 
+
+if __name__ == '__main__':
+    os.getcwd()
+    files_names = os.listdir("figures_folder")
+    txt = "file\tids_tags\turl_tags\tstyles_tags\ttranslate_scale_tag\n"
+    for k in files_names:
+        if "," in k: # skip files that have ',' in filename, as not opened correctly
+            continue
+        res = verify_this_svg(os.path.join(os.getcwd(), "figures_folder", k))
+        txt += f"{k}\t{res[0]}\t{res[1]}\t{res[2]}\t{res[3]}\n"
+
+    with open("output.txt", "w") as f:
+        f.write(txt)
